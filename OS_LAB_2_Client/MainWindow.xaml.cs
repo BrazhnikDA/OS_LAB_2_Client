@@ -16,6 +16,7 @@ namespace OS_LAB_2_Client
         bool IsClick = false;
         Client client;
         private BindingList<Tech> toData;
+        int count = 0;  // Количество записей в таблице
 
         public MainWindow()
         {
@@ -49,6 +50,7 @@ namespace OS_LAB_2_Client
         {
             var technik = new Tech();
             {
+                technik.id = toData[index].id;
                 technik.name = toData[index].name;
                 technik.marka = toData[index].marka;
                 technik.tech = toData[index].tech;
@@ -71,7 +73,6 @@ namespace OS_LAB_2_Client
             textBoxSerNum.Text = toData[currentRowIndex].serNum;
             comboBoxTechnic.Text = toData[currentRowIndex].tech;
             pickerDate.Text = toData[currentRowIndex].date;
-
             IsClick = true;
         }
 
@@ -81,6 +82,7 @@ namespace OS_LAB_2_Client
             {
                 if (IsClick)
                 {
+                    toData[currentRowIndex].id = count.ToString();
                     toData[currentRowIndex].name = textBoxFIO.Text;
                     toData[currentRowIndex].marka = textBoxMarks.Text;
                     toData[currentRowIndex].faultClient = textBoxFault.Text;
@@ -96,6 +98,7 @@ namespace OS_LAB_2_Client
                 }
                 else
                 {
+                    count++;
                     newRecordTable();
                     clearData();
                     tableView.ItemsSource = toData;
@@ -114,15 +117,17 @@ namespace OS_LAB_2_Client
                 tableView.ItemsSource = toData;
 
                 IsClick = false;
+                count--;
                 clearData();
             }
             else { MessageBox.Show("Ячейка не выбрана", "Предупреждение!", MessageBoxButton.OK, MessageBoxImage.Warning); }
         }
 
-            private void newRecordTable()
+        private void newRecordTable()
         {
             toData.Add(new Tech()
             {
+                id = count.ToString(),
                 name = textBoxFIO.Text,
                 marka = textBoxMarks.Text,
                 tech = comboBoxTechnic.Text,

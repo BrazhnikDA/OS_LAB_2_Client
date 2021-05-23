@@ -12,6 +12,8 @@
 
         <DataGrid x:Name="tableView" SelectionUnit="Cell" CanUserAddRows="False" FontSize="20px" AutoGenerateColumns="False" Margin="0,0,333.333,-1.333" HorizontalGridLinesBrush="#FF0B0B0B" VerticalGridLinesBrush="#FF0B0B0B" >
             <DataGrid.Columns>
+                
+                <DataGridTextColumn Header=""                   Width="37"  Binding="{Binding id}"     IsReadOnly="True"/>
                 <DataGridTextColumn Header="ФИО"                Width="300" Binding="{Binding name}"   IsReadOnly="True"/>
                 <DataGridTextColumn Header="Вид техники"        Width="230" Binding="{Binding tech}"   IsReadOnly="True"/>
                 <DataGridTextColumn Header="Марка"              Width="120" Binding="{Binding marka}"  IsReadOnly="True"/>

@@ -8,6 +8,7 @@ namespace OS_LAB_2_Client
 {
     class Tech
     {
+        public string id { get; set; }
         public string name { get; set; }
         public string marka { get; set; }
         public string tech { get; set; }
