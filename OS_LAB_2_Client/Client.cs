@@ -8,19 +8,24 @@ using System.Threading;
 using System.Threading.Tasks;
 
 namespace OS_LAB_2_Client
-{ 
+{
     class Client
     {
         private const string host = "127.0.0.1";    // IP
         private const int port = 7770;              // Порт
         TcpClient client;                           // Клиент
         NetworkStream stream;                       // Поток от клиента до сервера
+
+        public bool isUpdate {get; set;}
         
+        public List<string> lastMessage { get; set; }
+        int countGetRow = 0;
         public bool IsConnected { get; set; }
 
         public Client()
         {
-
+            lastMessage = new List<string>();
+            isUpdate = true;
         }
 
         public void serverConnect()
@@ -71,20 +76,39 @@ namespace OS_LAB_2_Client
                         bytes = stream.Read(data, 0, data.Length);
                         builder.Append(Encoding.UTF8.GetString(data, 0, bytes));
                     }
-                    while (stream.DataAvailable); 
-                    Console.WriteLine("Error: " + builder.ToString());      // Вывод полученного сообщения
+                    while (stream.DataAvailable);
+
+                    if (builder.Length > 0)
+                    {
+                        Console.WriteLine("Message from server: " + builder.ToString());      // Вывод полученного сообщения
+                        String[] razbJson = builder.ToString().Split('}');
+                        for (int i = 0; i < razbJson.Length; i++)
+                        {
+                            if (razbJson[i] == "") { }
+                            else
+                            {
+                                if(razbJson[i][0] == '{')
+                                {
+                                    lastMessage.Add(razbJson[i] + "}");
+                                    countGetRow++;
+                                    isUpdate = true;
+                                }
+                                else
+                                {
+
+                                }
+                            }
+                        }
+                    }
                 }
                 catch
                 {
                     Console.WriteLine("Подключение прервано!"); // Соединение было прервано
-                    //MessageBox.Show("Подключение разрвано, приложение закроется через 5 секунд", "Предупреждение", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    //Thread.Sleep(5000);
                     disconnect();
                 }
             }
         }
-
-        private void disconnect()
+        public void disconnect()
         {
             if (stream != null)
                 stream.Close();     // Отключение потока
@@ -97,9 +121,15 @@ namespace OS_LAB_2_Client
         {
             if ((message != ""))
             {
-                byte[] buffer = new byte[1024];
-                buffer = Encoding.UTF8.GetBytes(message);   // Делаем байт код в формате UTF-8(Это важно) и отправляем его на сервер
-                stream.Write(buffer, 0, buffer.Length);
+                try
+                {
+                    byte[] buffer = new byte[1024];
+                    buffer = Encoding.UTF8.GetBytes(message);   // Делаем байт код в формате UTF-8(Это важно) и отправляем его на сервер
+                    stream.Write(buffer, 0, buffer.Length);
+                }catch
+                {
+                    Console.WriteLine("Ошибка отправки сообщения на сервер!");
+                }
             }
         }
     }

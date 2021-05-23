@@ -24,16 +24,76 @@ namespace OS_LAB_2_Client
 
             client = new Client();
             toData = new BindingList<Tech>();
+
+            Thread brainBot = new Thread(new ThreadStart(listenUpdate));    
+            brainBot.Start();
         }
 
-        private void buttonSend_Click(object sender, RoutedEventArgs e)
+        private void listenUpdate()
+        {
+            while(true)
+            {
+                Thread.Sleep(3000);
+    
+                    Dispatcher.BeginInvoke(new Action(delegate
+                    {
+                        tableUpdate();
+                    }));
+            }
+        }
+
+        private void tableUpdate()
+        {
+            if (client.lastMessage.Count != 0)
+            {
+                string inTable = client.lastMessage[0];
+                if (inTable == "Empty") { }
+                else
+                {
+                    if (inTable.Length > 0)
+                    {
+                        if (toData.Count > 0)
+                        {
+                            tableView.ItemsSource = null;
+                        }
+
+                        for (int index = 0; index < client.lastMessage.Count; index++)
+                        {
+                            var deserMessage = JsonConvert.DeserializeObject<Tech>(client.lastMessage[index]);
+                            var technik = new Tech();
+                            {
+                                technik.id = deserMessage.id;
+                                technik.name = deserMessage.name;
+                                technik.marka = deserMessage.marka;
+                                technik.tech = deserMessage.tech;
+                                technik.serNum = deserMessage.serNum;
+                                technik.faultClient = deserMessage.faultClient;
+                                technik.date = deserMessage.date;
+                            }
+
+                            int ind = Convert.ToInt32(deserMessage.id) - 1;
+                            if (count <= ind)
+                            {
+                                toData.Add(technik);
+                                count++;
+                            }
+                            else
+                            {
+                                toData[ind] = deserMessage;
+                            }
+                        }
+                        tableView.ItemsSource = toData;
+                        client.isUpdate = false;
+                        client.lastMessage.Clear();
+                    }
+                }
+            }
+        }
+
+        private void Send()
         {
             if (toData.Count != 0)
             {
-                if (client.IsConnected == false)
-                {
-                    client.serverConnect();
-                }
                 if (client.checkConnection())
                 {
                     for (int i = 0; i < toData.Count; i++)
@@ -82,7 +142,7 @@ namespace OS_LAB_2_Client
             {
                 if (IsClick)
                 {
-                    toData[currentRowIndex].id = count.ToString();
+                    toData[currentRowIndex].id = (currentRowIndex + 1).ToString();
                     toData[currentRowIndex].name = textBoxFIO.Text;
                     toData[currentRowIndex].marka = textBoxMarks.Text;
                     toData[currentRowIndex].faultClient = textBoxFault.Text;
@@ -103,6 +163,7 @@ namespace OS_LAB_2_Client
                     clearData();
                     tableView.ItemsSource = toData;
                 }
+                Send();
             }
             else { MessageBox.Show("Не все поля были заполненны", "Предупреждение!", MessageBoxButton.OK, MessageBoxImage.Warning); }
 
@@ -119,6 +180,7 @@ namespace OS_LAB_2_Client
                 IsClick = false;
                 count--;
                 clearData();
+                Send();
             }
             else { MessageBox.Show("Ячейка не выбрана", "Предупреждение!", MessageBoxButton.OK, MessageBoxImage.Warning); }
         }
@@ -144,12 +206,12 @@ namespace OS_LAB_2_Client
             textBoxFault.Text = "";
             textBoxSerNum.Text = "";
             comboBoxTechnic.Text = "";
-            pickerDate.Text = "";
+            //pickerDate.Text = "";
         }
 
         private bool isEmptyData()
         {
-            if(textBoxFIO.Text == "" && textBoxMarks.Text == "" && comboBoxTechnic.Text == "" &&
+            if (textBoxFIO.Text == "" && textBoxMarks.Text == "" && comboBoxTechnic.Text == "" &&
                 textBoxSerNum.Text == "" && textBoxFault.Text == "")
             {
                 return false;
@@ -162,6 +224,21 @@ namespace OS_LAB_2_Client
                 }
                 return true;
             }
+        }
+
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            if (client.IsConnected == false)
+            {
+                client.serverConnect();
+                Thread.Sleep(150);
+            }
+        }
+
+        private void Window_Closing(object sender, CancelEventArgs e)
+        {
+            client.disconnect();
+            Environment.Exit(0);
         }
     }
 }

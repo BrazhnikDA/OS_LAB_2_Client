@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:OS_LAB_2_Client"
         mc:Ignorable="d"
         Title="Клиент" Height="827.667" Width="1236.999"
-        WindowStartupLocation="CenterScreen">
+        WindowStartupLocation="CenterScreen" Loaded="Window_Loaded" Closing="Window_Closing">
     <Grid>
         <Border BorderBrush="Black" BorderThickness="1" Height="800" Margin="0,0,0.333,-1.333" Width="333" Background="#FFFDFFEB" VerticalAlignment="Top" HorizontalAlignment="Right"/>
 
@@ -49,8 +49,6 @@
 
         <Label x:Name="LabelDate" Content="Дата поступления" Panel.ZIndex="18" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,376,148.333,0" FontFamily="Comic Sans MS" FontSize="17" ></Label>
         <DatePicker x:Name="pickerDate" HorizontalAlignment="Right" Margin="0,415,9.333,0" VerticalAlignment="Top" Width="298"/>
-
-        <Button x:Name="buttonSend" Content="Отправить" HorizontalAlignment="Right" Margin="0,0,10.333,41.667" VerticalAlignment="Bottom" Width="304" Height="25" Click="buttonSend_Click"/>
         <Button x:Name="buttonSave" Content="Сохранить" HorizontalAlignment="Right" Margin="0,0,161.333,9.667" VerticalAlignment="Bottom" Width="153" Background="#FF93FF8E" Height="27" Click="buttonSave_Click"/>
         <Button x:Name="buttonRemove" Content="Удалить" HorizontalAlignment="Right" Margin="0,0,9.333,9.667" VerticalAlignment="Bottom" Width="147" Background="#FFFF8E8E" Height="27" Click="buttonRemove_Click"/>
 
